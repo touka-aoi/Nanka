@@ -60,6 +60,7 @@ half4 ShadeFinalColor(Varyings input) : SV_TARGET
   // 近傍格子点
   float2 n = floor(uv + 0.5);
   float dist = sqrt(2.0);
+  float2 id;
 
   // 近傍格子点の中で最も近い格子点を探す
   for (float j = -2.0; j <= 2.0; j++) {
@@ -67,10 +68,16 @@ half4 ShadeFinalColor(Varyings input) : SV_TARGET
       // 隣の格子点
       float2 glid = n + float2(i, j);
       float2 jitter = sin(_Seed) * (hash22(glid) - 0.5);
-      dist = min(dist, length(uv - glid + jitter));
+      // dist = min(dist, length(uv - glid + jitter));
+      if (dist >= length(glid + jitter - uv)) {
+        dist = length(glid + jitter - uv);
+        id = glid;
+      }
     }
   }
 
-  half4 baseColor = half4(dist, dist, dist, 1);
+  id = hash22(id);
+
+  half4 baseColor = half4(id, 1, 1);
   return baseColor;
 }
