@@ -4,13 +4,18 @@ Shader "Custom/WireFrame"
     {
         [Header(Base Color)]
         [HDR][MainColor]_BaseColor("_BaseColor", Color) = (1,1,1,1)
+
+        [Header(Line)]
+        _LineWidth("_LineWidth", Range(0,1)) = 0.01
+
+         [Toggle(_IsDiagonal)]_IsDiagonal("_IsDiagonal (on/off Diagonal)", Float) = 0
     }
     SubShader
     {
         Tags 
         { 
             "RenderType"="Opaque" 
-            "Queue"="Geometry+1"
+            "Queue"="Transparent"
         }
 
         Pass 
@@ -19,10 +24,10 @@ Shader "Custom/WireFrame"
             Tags { "LightMode" = "UniversalForward" }
 
             // Shader設定 非透明
-            Cull Back // 裏面カリング
+            Cull Off // 裏面カリング
             ZTest LEqual // Zテストを行う
             ZWrite On // Zバッファに書き込む
-            Blend One Zero // 上書き
+            Blend SrcAlpha OneMinusSrcAlpha// αオン
 
             HLSLPROGRAM
 
@@ -36,6 +41,7 @@ Shader "Custom/WireFrame"
             #pragma vertex VertexShaderWork
             #pragma geometry GS
             #pragma fragment ShadeFinalColor
+
 
             #include "Wireframe.hlsl"
 

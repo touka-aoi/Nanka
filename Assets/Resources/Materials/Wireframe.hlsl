@@ -17,6 +17,16 @@ struct Varyings
     float3 baryCentriCorrds : TEXCOORD1;
 };
 
+CBUFFER_START(UnityPerMaterial)
+
+// lineWidth
+float _LineWidth;
+float _IsDiagonal;
+
+CBUFFER_END
+
+
+
 Attributes AttributesCreate(float4 positionOS, float2 uv)
 {
   Attributes output;
@@ -48,13 +58,36 @@ Varyings VertexShaderWork(Attributes input)
 void GS(triangle Attributes input[3]: SV_GeometryIn, inout TriangleStream<Varyings> triStream)
 {
   Varyings output[3];
+  
+  // 対角線を削除する
+
+  float3 param = float3(0, 0, 0);
+
+  if(_IsDiagonal)
+  {
+    float edgeA = length(input[0].positionOS.xyz - input[1].positionOS.xyz);
+    float edgeB = length(input[1].positionOS.xyz - input[2].positionOS.xyz);
+    float edgeC = length(input[2].positionOS.xyz - input[0].positionOS.xyz);
+    
+    // if edgeA is the longest edge
+    if (edgeA > edgeB && edgeA > edgeC)
+    {
+      param = float3(0, 0, 1);
+    } else if (edgeB > edgeA && edgeB > edgeC)
+    {
+      param = float3(1, 0, 0);
+    } else if (edgeC > edgeA && edgeC > edgeB)
+    {
+      param = float3(0, 1, 0);
+    }
+  }
 
   [unroll]
   for (int i = 0; i < 3; i++) 
   {
     output[i].positionCS = input[i].positionOS;
     output[i].uv = input[i].uv;
-    output[i].baryCentriCorrds = float3(i == 0, i == 1, i == 2);
+    output[i].baryCentriCorrds = float3(i == 0, i == 1, i == 2) + param;
     triStream.Append(output[i]);
   }
 
@@ -101,8 +134,9 @@ void GS(triangle Attributes input[3]: SV_GeometryIn, inout TriangleStream<Varyin
 half4 ShadeFinalColor(Varyings input) : SV_TARGET
 {
   float3 fd = fwidth(input.baryCentriCorrds);
-
-  half4 baseColor = half4(saturate(input.baryCentriCorrds / fd), 1);
+  float edge = min(min(input.baryCentriCorrds.x, input.baryCentriCorrds.y), input.baryCentriCorrds.z);
+  edge = step(edge, _LineWidth);
+  half4 baseColor = half4(edge, edge, edge,  edge);
   // half4 baseColor = half4(input.baryCentriCorrds, 1);
   return baseColor;
 }
