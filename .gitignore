@@ -4,7 +4,7 @@
 ### User Setting ###
 Assets/Model/
 Assets/Shader/ToonShader/Nilo
-
+.vscode/
 
 ### Unity ###
 # This .gitignore file should be placed at the root of your Unity project directory
