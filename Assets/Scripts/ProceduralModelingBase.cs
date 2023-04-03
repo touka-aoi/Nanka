@@ -6,7 +6,9 @@ namespace ProceduralModeling {
   public enum ProceduralModelingMaterial {
     Standard,
     UV,
-    Normal
+    Normal,
+
+    Wireframe,
   };
 
   [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -63,6 +65,8 @@ namespace ProceduralModeling {
           return Resources.Load<Material>("Materials/UV");
         case ProceduralModelingMaterial.Normal:
           return Resources.Load<Material>("Materials/Normal");
+        case ProceduralModelingMaterial.Wireframe:
+          return Resources.Load<Material>("Materials/Wireframe");
         default:
           return Resources.Load<Material>("Materials/Standard");
       }
