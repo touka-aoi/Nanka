@@ -63,7 +63,7 @@ void GS(triangle Attributes input[3]: SV_GeometryIn, inout TriangleStream<Varyin
 
   float3 param = float3(0, 0, 0);
 
-  if(_IsDiagonal)
+  if(!_IsDiagonal)
   {
     float edgeA = length(input[0].positionOS.xyz - input[1].positionOS.xyz);
     float edgeB = length(input[1].positionOS.xyz - input[2].positionOS.xyz);
