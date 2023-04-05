@@ -6,7 +6,7 @@ Shader "Custom/volonoi"
         _VolonoiSize("Volonoi Size", Range(1, 20)) = 10
 
         // セルの数値
-        _Seed("Cell Size", Range(0.1, 1.0)) = 0.5
+        _Seed("Seed", Range(0.1, 1.0)) = 0.5
     }
     SubShader
     {

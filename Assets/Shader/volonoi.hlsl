@@ -76,8 +76,24 @@ half4 ShadeFinalColor(Varyings input) : SV_TARGET
     }
   }
 
+  // 境界線を描画する
+  float md = sqrt(2.0); // 閾値
+  float2 a = id + sin(_Seed) * (hash22(id) - 0.5) - uv; // 現在の特徴点を取得
+
+  for (float k = -2.0; k <= 2.0; k++) {
+    for (float l = -2.0; l <= 2.0; l++) {
+      float2 glid = id  + float2(l, k); // 隣の格子点を検索する
+      float2 b = glid + sin(_Seed) * (hash22(glid) - 0.5) - uv; // 特徴点を取得
+      if ( dot(a-b, a-b) > 0.0001) {
+        // 同じ点だと内積が0になるので除外できる
+        md = min(md, dot(0.5 * (a + b), normalize(b - a)));
+      }
+    }
+  }
+
   id = hash22(id);
 
-  half4 baseColor = half4(id, 1, 1);
+  half4 baseColor = lerp( float4(1, 1,1.0, 1.0), float4(0.0, 0.0, 0.0, 0.0), smoothstep( 0.02, 0.07, md ) );
+  // half4 baseColor = float4(md, 1, 1, 1);
   return baseColor;
 }
