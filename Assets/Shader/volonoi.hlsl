@@ -47,6 +47,8 @@ CBUFFER_START(UnityPerMaterial)
 
 uint _VolonoiSize;
 float _Seed;
+float _IsEdge;
+float _Opacity;
 
 CBUFFER_END
 
@@ -61,6 +63,7 @@ half4 ShadeFinalColor(Varyings input) : SV_TARGET
   float2 n = floor(uv + 0.5);
   float dist = sqrt(2.0);
   float2 id;
+  half4 baseColor;
 
   // 近傍格子点の中で最も近い格子点を探す
   for (float j = -2.0; j <= 2.0; j++) {
@@ -93,7 +96,14 @@ half4 ShadeFinalColor(Varyings input) : SV_TARGET
 
   id = hash22(id);
 
-  half4 baseColor = lerp( float4(1, 1,1.0, 1.0), float4(0.0, 0.0, 0.0, 0.0), smoothstep( 0.02, 0.07, md ) );
+  if(!_IsEdge) {
+    md = 1;
+  }
+
+  baseColor = lerp( float4(1, 1, 1, 1), float4(id, 1.0, _Opacity), smoothstep( 0.02, 0.07, md ) );
+  
+  // baseColor = float4(id, 1, 1);
+  
   // half4 baseColor = float4(md, 1, 1, 1);
   return baseColor;
 }

@@ -10,7 +10,9 @@ Material:
   m_Name: volonoi
   m_Shader: {fileID: 4800000, guid: 01f2b9aaf213f9940a8cb8a23878f0cf, type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _IsEdge
+  - _Opacity
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -23,7 +25,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _CellSize: 0.398
+    - _IsEdge: 1
+    - _Opacity: 1
     - _Seed: 1
-    - _VolonoiSize: 16.46
+    - _VolonoiSize: 20
     m_Colors: []
   m_BuildTextureStacks: []
