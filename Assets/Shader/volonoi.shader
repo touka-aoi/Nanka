@@ -6,7 +6,7 @@ Shader "Custom/volonoi"
         _VolonoiSize("Volonoi Size", Range(1, 20)) = 10
 
         // セルの数値
-        _Seed("Seed", Range(0.1, 1.0)) = 0.5
+        _Seed("Seed", Range(0.0, 1.0)) = 0.5
     }
     SubShader
     {
@@ -14,7 +14,7 @@ Shader "Custom/volonoi"
         { 
             "RenderPipeline" = "UniversalRenderPipeline"
             "RenderType"="Opaque" 
-            "Queue"="Geometry"
+            "Queue"="Transparent"
             "UniversalMaterialType" = "Lit"
         }
 
@@ -24,10 +24,10 @@ Shader "Custom/volonoi"
             Tags { "LightMode" = "UniversalForward" }
 
             // Shader設定 非透明
-            Cull Back // 裏面カリング
+            Cull Off // 裏面カリング
             ZTest LEqual // Zテストを行う
             ZWrite On // Zバッファに書き込む
-            Blend One Zero // 上書き
+            Blend SrcAlpha OneMinusSrcAlpha// 上書き
 
             HLSLPROGRAM
 
