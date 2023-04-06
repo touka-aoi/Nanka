@@ -2,16 +2,7 @@ Shader "Custom/Geometry"
 {
     Properties
     {
-        [Header(Base Color)]
-        [HDR][MainColor]_BaseColor("_BaseColor", Color) = (1,1,1,1)
-
-        [Header(Line)]
-        _LineWidth("_LineWidth", Range(0,1)) = 0.01
-
-        [Toggle(_IsDiagonal)]_IsDiagonal("_IsDiagonal (on/off Diagonal)", Float) = 0
-
-        [Header(Height)]
-        _Height("_Height", Range(0, 20)) = 10
+    
     }
     SubShader
     {
