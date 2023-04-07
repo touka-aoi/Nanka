@@ -7,6 +7,16 @@ Shader "Custom/volonoi"
 
         // セルの数値
         _Seed("Seed", Range(0.0, 1.0)) = 0.5
+
+
+        [Header(Edge)]
+
+        // エッジを表示するか選択します
+        [Toggle(_IsEdge)]_IsEdge("isEdge", Range(0.0, 1.0)) = 1.0
+
+        // 透明度を制御します
+        _Opacity("Opacity", Range(0.0, 1.0)) = 1.0
+
     }
     SubShader
     {
