@@ -39,31 +39,68 @@ V2G VertexShaderWork(Attributes input)
   return output;
 }
 
-[maxvertexcount(3)]
+Varyings V2GToVaryings(float3 positionCS, float2 uv) 
+{
+  Varyings output;
+
+  output.positionCS = TransformWorldToHClip(float4(positionCS, 0.0));
+  output.uv = uv;
+  return output;
+}
+
+
+
+[maxvertexcount(15)]
 void GS(triangle V2G input[3] , inout TriangleStream<Varyings> triStream)
 {
 
-  Varyings w1;
-  Varyings w2;
-  Varyings w3;
+  // 三角形のワールド座標を取得する
+  float3 w0 = input[0].positionWS.xyz;
+  float3 w1 = input[1].positionWS.xyz;
+  float3 w2 = input[2].positionWS.xyz;
 
-  float3 normal = normalize(cross(input[1].positionWS - input[0].positionWS, input[2].positionWS - input[0].positionWS));
+  // 三角形の法線を取得する
+  float3 normal = normalize(cross(w1 - w0, w2 - w0));
 
-  // input[i].positionOS = float4(TransformObjectToWorld(input[i].positionOS), 1.0);
-  // VertexPositionInputs vertexInput = GetVertexPositionInputs(input[i].positionOS); 
-  w1.positionCS = TransformWorldToHClip(input[0].positionWS + float4(normal * _LocalTime, 0.0));
-  w2.positionCS = TransformWorldToHClip(input[1].positionWS + float4(normal * _LocalTime, 0.0));
-  w3.positionCS = TransformWorldToHClip(input[2].positionWS + float4(normal * _LocalTime, 0.0));
+  // 法線を加算する
+  float3 w3 = w0 + normal * _LocalTime;
+  float3 w4 = w1 + normal * _LocalTime;
+  float3 w5 = w2 + normal * _LocalTime;
 
-  w1.uv = input[0].uv;
-  w2.uv = input[1].uv;
-  w3.uv = input[2].uv;
+  // 座標変換を行う
+  float4 w3_cs = TransformWorldToHClip(float4(w3, 0.0));
+  float4 w4_cs = TransformWorldToHClip(float4(w4, 0.0));
+  float4 w5_cs = TransformWorldToHClip(float4(w5, 0.0));
 
-  triStream.Append(w1);
-  triStream.Append(w2);
-  triStream.Append(w3);
+  // 三角形を出力する
+  triStream.Append(V2GToVaryings(w3, input[0].uv));
+  triStream.Append(V2GToVaryings(w4, input[1].uv));
+  triStream.Append(V2GToVaryings(w5, input[2].uv));
 
   triStream.RestartStrip();
+
+  // 側面を作成する
+  triStream.Append(V2GToVaryings(w3, input[0].uv));
+  triStream.Append(V2GToVaryings(w0, input[2].uv));
+  triStream.Append(V2GToVaryings(w4, input[1].uv));
+  triStream.Append(V2GToVaryings(w1, input[1].uv));
+
+  triStream.RestartStrip();
+
+  triStream.Append(V2GToVaryings(w4, input[1].uv));
+  triStream.Append(V2GToVaryings(w1, input[1].uv));
+  triStream.Append(V2GToVaryings(w5, input[2].uv));
+  triStream.Append(V2GToVaryings(w2, input[2].uv));
+
+  triStream.RestartStrip();
+
+  triStream.Append(V2GToVaryings(w5, input[2].uv));
+  triStream.Append(V2GToVaryings(w2, input[2].uv));
+  triStream.Append(V2GToVaryings(w3, input[0].uv));
+  triStream.Append(V2GToVaryings(w0, input[2].uv));
+
+  triStream.RestartStrip();
+  
 }
 
 half4 ShadeFinalColor(Varyings input) : SV_TARGET
